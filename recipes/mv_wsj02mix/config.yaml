@@ -1,0 +1,46 @@
+path:
+  wsj0: wsj0/
+  wsj02mix: wsj0mix/data/2speakers/wav16k/min/
+  wsj03mix: wsj0mix/data/3speakers/wav16k/min/
+
+n_mix_dict:
+  tr: 20000
+  cv: 5000
+  tt: 3000
+
+sr: 16000
+
+# room config
+min_room_size: [5, 5, 3]
+max_room_size: [5, 5, 3]
+
+max_rt: 0.2
+min_rt: 0.2
+
+# mic config
+n_mic: 6
+
+min_mic_r: 0.075
+max_mic_r: 0.125
+
+min_mic_dist: 0.05
+
+# array config
+max_arr_r: 0.5
+min_arr_z: 1.0
+max_arr_z: 2.0
+
+# source config
+n_src_list: [2]
+
+src_snr_range: 2.5
+
+min_src_r: 0.5
+max_src_r: 2.0
+
+src2wall_dist: 0.5
+
+min_omega: 0.0
+max_omega: 0.7853981633974483  # = 1 / 4 * np.pi = 45 deg / sec
+
+fps: 10

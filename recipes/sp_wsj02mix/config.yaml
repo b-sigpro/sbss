@@ -1,0 +1,3 @@
+path:
+  sp_wsj02mix: spatialized_wsj0mix/data/2speakers/wav16k/min/
+  wsj02mix: wsj0mix/data/2speakers/wav16k/min/

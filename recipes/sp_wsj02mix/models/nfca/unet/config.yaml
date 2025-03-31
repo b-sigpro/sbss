@@ -1,0 +1,86 @@
+_base_: ${base_config_path}/train_ddp.yaml
+
+sr: 16000
+n_fft: 512
+hop_length: 128
+
+n_mic: 4
+n_src: 3
+dim_latent: 50
+
+trainer:
+  max_epochs: 200
+  gradient_clip_val: 5.0
+  sync_batchnorm: True
+  
+  benchmark: True
+  use_distributed_sampler: False
+
+  callbacks:
+    - _target_: lightning.pytorch.callbacks.ModelCheckpoint
+      filename: "{epoch:04d}"
+      save_last: True
+    - _target_: lightning.pytorch.callbacks.RichProgressBar
+      refresh_rate: 5
+    - _target_: lightning.pytorch.callbacks.RichModelSummary
+      max_depth: 3
+
+    - _target_: sbss.common.callbacks.cyclic_annealer.CyclicAnnealerCallback
+      name: beta
+      cycle: 10
+      max_value: 1.0
+      ini_period: 50
+      ini_max_value: 10.0
+
+    - _target_: sbss.nfca.iter.callbacks.visualizer.VisualizerCallback
+
+hdf5_path: ${working_directory}/../../../hdf5
+datamodule:
+  _target_: sbss.common.datamodules.single_datamodule.SingleDataModule
+  train_dataset_fn:
+    _partial_: True
+    _target_: sbss.nfca.common.datasets.hdf5_wavact_dataset.HDF5WavActDataset
+    dataset_path: ${hdf5_path}/unsupervised.derev_64000.train.hdf5
+    grp_list: ${hdf5_path}/unsupervised.derev_64000.train.json
+
+  val_dataset_fn:
+    _partial_: True
+    _target_: sbss.nfca..common.datasets.hdf5_wavact_dataset.HDF5WavActDataset
+    dataset_path: ${hdf5_path}/unsupervised.derev_64000.cv.hdf5
+    grp_list: ${hdf5_path}/unsupervised.derev_64000.cv.json
+
+  common_args:
+    randperm_mic: True
+
+  batch_size: 16
+  num_workers: 12
+
+task:
+  _target_: sbss.nfca.iter.tasks.avi_task.AVITask
+  n_fft: ${n_fft}
+  hop_length: ${hop_length}
+  n_src: ${n_src}
+  beta: 1.0
+
+  encoder:
+    _target_: sbss.nfca.iter.encoders.unet_encoder.UNetEncoder
+    n_fft: ${n_fft}
+    n_mic: ${n_mic}
+    n_src: ${n_src}
+    dim_latent: ${dim_latent}
+
+  decoder:
+    _target_: sbss.nfca.common.decoders.res_decoder.Decoder
+    n_fft: ${n_fft}
+    dim_latent: ${dim_latent}
+
+  scm_estimator:
+    _target_: sbss.common.scm_estimators.em_estimator.EMEstimator
+    n_iter: 5
+
+  optimizer_config:
+    _target_: aiaccel.torch.lightning.OptimizerConfig
+    optimizer_generator:
+      _partial_: True
+      _target_: torch.optim.Adam
+      lr: 1.e-3
