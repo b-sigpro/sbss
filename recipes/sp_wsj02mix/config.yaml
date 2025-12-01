@@ -1,3 +1,22 @@
-path:
-  sp_wsj02mix: spatialized_wsj0mix/data/2speakers/wav16k/min/
-  wsj02mix: wsj0mix/data/2speakers/wav16k/min/
+_base_: ../globals.yaml
+
+n_mixtures:
+  tr: 20000
+  cv: 5000
+  tt: 3000
+
+n_mics: 4
+n_fft: 512
+hop_length: 128
+
+snr: 30
+
+wpe:
+  taps: 10
+  delay: 3
+
+blacklist:
+  - "20hc010m_0.74179_01co030w_-0.74179.wav"
+  - "20ra0102_2.4821_40aa0112_-2.4821.wav"
+  - "40aa0112_1.0148_407c0206_-1.0148.wav"
+  - "446c0209_1.8488_22hc010z_-1.8488.wav"

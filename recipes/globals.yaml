@@ -1,0 +1,6 @@
+corpus_base_path: ${oc.env:CORPUS_BASE_PATH}
+path:
+  wsj0: ${corpus_base_path}/wsj0/
+  wsj02mix: ${corpus_base_path}/wsj0mix/data/2speakers/wav16k/min/
+  wsj03mix: ${corpus_base_path}/wsj0mix/data/3speakers/wav16k/min/
+  sp_wsj02mix: ${corpus_base_path}/spatialized_wsj0mix/data/2speakers_reverb/wav16k/min/

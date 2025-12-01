@@ -1,11 +1,14 @@
-base_config: ${base_config_path}/train_ddp.yaml
+_base_: ${resolve_pkg_path:aiaccel.torch.apps.config}/train_ddp.yaml
+
+n_gpus: 8
+walltime: "16:0:0"
 
 sr: 16000
 n_fft: 512
 hop_length: 128
 
 n_mic: 4
-n_src: 4
+n_src: 3
 dim_latent: 50
 
 trainer:
@@ -16,6 +19,8 @@ trainer:
   benchmark: True
   use_distributed_sampler: False
 
+  precision: bf16-mixed
+
   callbacks:
     - _target_: lightning.pytorch.callbacks.ModelCheckpoint
       filename: "{epoch:04d}"
@@ -25,45 +30,46 @@ trainer:
     - _target_: lightning.pytorch.callbacks.RichModelSummary
       max_depth: 3
 
-    - _target_: sbss.common.callbacks.cyclic_annealer.CyclicAnnealerCallback
+    - _target_: sbss.common.callbacks.CyclicAnnealerCallback
       name: beta
       cycle: 10
       max_value: 1.0
       ini_period: 50
       ini_max_value: 10.0
 
-    - _target_: sbss.nfca.jd.callbacks.visualizer.VisualizerCallback
+    - _target_: sbss.nfca.callbacks.PsdVisualizerCallback
+    - _target_: sbss.nfca.callbacks.XtVisualizerCallback
 
-hdf5_path: ${working_directory}/../../../hdf5
+hdf5_prefix: ${working_directory}/../../../hdf5/unsupervised.derev_64000
 datamodule:
-  _target_: sbss.common.datamodules.single_datamodule.SingleDataModule
+  _target_: aiaccel.torch.lightning.datamodules.SingleDataModule
   train_dataset_fn:
     _partial_: True
-    _target_: sbss.nfca.common.datasets.hdf5_wavact_dataset.HDF5WavActDataset
-    dataset_path: ${hdf5_path}/unsupervised.derev_64000.train.hdf5
-    grp_list: ${hdf5_path}/unsupervised.derev_64000.train.json
+    _target_: sbss.common.datasets.WavHDF5Dataset
+    dataset_path: ${hdf5_prefix}.tr.hdf5
+    grp_list: ${hdf5_prefix}.tr.json
 
   val_dataset_fn:
     _partial_: True
-    _target_: sbss.nfca..common.datasets.hdf5_wavact_dataset.HDF5WavActDataset
-    dataset_path: ${hdf5_path}/unsupervised.derev_64000.cv.hdf5
-    grp_list: ${hdf5_path}/unsupervised.derev_64000.cv.json
+    _target_: sbss.common.datasets.WavHDF5Dataset
+    dataset_path: ${hdf5_prefix}.cv.hdf5
+    grp_list: ${hdf5_prefix}.cv.json
 
   common_args:
     randperm_mic: True
 
-  batch_size: 16
+  batch_size: ${eval:"128 // ${n_gpus}"}
   num_workers: 12
 
 task:
-  _target_: sbss.nfca.jd.tasks.avi_gnm_task.AVITask
+  _target_: sbss.nfca.tasks.JdAviTask
   n_fft: ${n_fft}
   hop_length: ${hop_length}
   n_src: ${n_src}
   beta: 1.0
 
   encoder:
-    _target_: sbss.nfca.jd.encoders.unet_gnm_encoder.UNetEncoder
+    _target_: sbss.nfca.encoders.JdUNetEncoder
     n_fft: ${n_fft}
     n_mic: ${n_mic}
     n_src: ${n_src}
@@ -74,7 +80,7 @@ task:
       norm_q: True
 
   decoder:
-    _target_: sbss.nfca.common.decoders.res_decoder.Decoder
+    _target_: sbss.nfca.decoders.ResDecoder
     n_fft: ${n_fft}
     dim_latent: ${dim_latent}
 

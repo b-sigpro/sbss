@@ -8,17 +8,66 @@ authors = [{name = "Yoshiaki Bando", email = "y.bando@aist.go.jp"}]
 readme = "README.md"
 license = {file = "LICENSE"}
 description = "Scalable Blind Source Separation Toolkit"
-version = "2025.03"
+version = "2025.11"
+
+dependencies = [
+    "aiaccel",
+    "einops",
+    "hydra-core@git+https://github.com/facebookresearch/hydra.git",
+    "omegaconf@git+https://github.com/omry/omegaconf.git",
+    "rich",
+    "matplotlib",
+    "lightning",
+    "kornia",
+    "numpy",
+    "torch",
+    "soundfile",
+    "librosa",
+    "torchaudio",
+    "torchmetrics",
+    "torchvision",
+    "pyyaml",
+]
 
 [project.urls]
 Home = "https://ybando.jp"
 
+[project.optional-dependencies]
+dev = [
+    "mpi4py",
+    "h5py",
+    "tensorboard",
+    "tensorboard-data-server",
+    "mir_eval",
+    "pesq",
+    "myst-parser",
+    "markdown-it-py>=3.0,<4.0",
+    "ruff",
+    "pystoi",
+    "pandas",
+    "sphinx",
+    "sphinxcontrib-jquery",
+    "sphinx-intl",
+    "sphinx-fontawesome",
+    "sphinx-rtd-theme",
+    "sphinx-copybutton",
+    "sphinx-autobuild",
+    "sphinx_design",
+    "shibuya"
+]
+
+dev-gpu = [
+    "gss@git+https://github.com/desh2608/gss",
+    "gpuRIR@git+https://github.com/DavidDiazGuerra/gpuRIR",
+]
+
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "UP", "B", "SIM", "I"]
+ignore = ["B905"]
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true
@@ -47,3 +96,105 @@ section-order = [
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+# feature.pre-install
+[tool.pixi.feature.pre-install.dependencies]
+git = "*"
+c-compiler = "*"
+zlib = "*"
+pkg-config = "*"
+
+[tool.pixi.feature.pre-install.activation.env]
+HDF5_VERSION = "1.14.6"
+MPI4PY_VERSION = "4.1.1"
+H5PY_VERSION = "3.14.0"
+CC = "mpicc"
+
+[tool.pixi.feature.pre-install.tasks]
+build-hdf5 = """
+rm -rf $PIXI_PROJECT_ROOT/3rd/hdf5 && \
+mkdir -p $PIXI_PROJECT_ROOT/3rd/hdf5/_build && cd $PIXI_PROJECT_ROOT/3rd/hdf5/_build && \
+wget https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_VERSION/hdf5-$HDF5_VERSION.tar.gz && \
+tar xf hdf5-$HDF5_VERSION.tar.gz && \
+cd hdf5-$HDF5_VERSION && \
+./configure \
+    --prefix=$PIXI_PROJECT_ROOT/3rd/hdf5 \
+    --with-zlib=$CONDA_PREFIX/lib \
+    --enable-parallel \
+    --enable-shared && \
+make -j $(nproc) && \
+make install && \
+make check-install
+"""
+
+remove-cache = """
+bash -c 'find $HOME/.cache/rattler -depth -name "aiaccel" -print -exec rm -r {} \\;'
+bash -c 'find $HOME/.cache/rattler -depth -name "mpi4py" -print -exec rm -r {} \\;' && \
+bash -c 'find $HOME/.cache/rattler -depth -name "h5py" -print -exec rm -r {} \\;'
+"""
+
+# feature.dev
+[tool.pixi.feature.dev.pypi-options]
+no-build-isolation = ["mpi4py", "h5py"]
+no-binary = ["mpi4py", "h5py", "gpuRIR"]
+
+[tool.pixi.feature.dev.dependencies]
+tensorboard-data-server = ">=0.7.0,<0.8"
+markdown-it-py = ">=3.0,<4.0"
+
+# feature.dev-tools
+[tool.pixi.feature.dev-tools.dependencies]
+byobu = "*"
+direnv = "*"
+bat = "*"
+htop = "*"
+bzip2 = "*"
+unzip = "*"
+colordiff = "*"
+wget = "*"
+curl = "*"
+make = ">=4.4"
+cmake = "*"
+pre-commit = "*"
+sox = "*"
+ffmpeg = ">=8.0.0"
+
+[tool.pixi.feature.dev-tools.pypi-dependencies]
+optuna = "*"
+jupyter = "*"
+
+[tool.pixi.activation.env]
+PATH = "$PIXI_PROJECT_ROOT/3rd/hdf5/bin:$PATH"
+LD_LIBRARY_PATH = "$PIXI_PROJECT_ROOT/3rd/hdf5/lib:$LD_LIBRARY_PATH"
+HDF5_MPI = "ON"
+HDF5_DIR = "$PIXI_PROJECT_ROOT/3rd/hdf5"
+
+[tool.pixi.dependencies]
+python = ">=3.12.8,<3.13"
+openjdk = "*"
+blas = { version = "*", build = "mkl" }
+rich = "*"
+numpy = "*"
+scipy = "*"
+cython = "*"
+cuda = "12.8.*"
+procps-ng = ">=4.0.4,<5"
+
+[tool.pixi.pypi-dependencies]
+sbss = { path = ".", editable = true }
+pkgconfig = "*"
+cupy-cuda12x = "*"
+
+
+[tool.pixi.pypi-options]
+no-build-isolation = ["gss"]
+
+[tool.pixi.environments]
+pre-install = { features = ["pre-install"], no-default-feature = true }
+default = { features = ["dev", "dev-gpu", "dev-tools", "pre-install"], solve-group = "default" }
+
+[tool.pixi.tasks]

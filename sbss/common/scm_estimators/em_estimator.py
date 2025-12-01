@@ -1,11 +1,28 @@
-# MIT License
-# Copyright (c) 2025 National Institute of Advanced Industrial Science and Technology (AIST), Japan
+# Copyright (C) 2025 National Institute of Advanced Industrial Science and Technology (AIST)
+# SPDX-License-Identifier: MIT
 
 import torch
 from torch import nn
 
 
-class EMEstimator(nn.Module):
+class EmEstimator(nn.Module):
+    """Expectation-Maximization (EM) algorithm for estimating spatial covariance matrices (SCMs).
+
+    This module iteratively estimates the SCMs using the EM algorithm
+    applied to multi-channel complex-valued signals. It updates the covariance
+    estimates based on posterior expectations to improve spatial separation.
+
+    Args:
+        n_iter (int): Number of EM iterations to perform.
+        eps (float, optional): Small constant added to the diagonal for numerical stability.
+            Defaults to 1e-6.
+
+    Returns:
+        torch.Tensor: Estimated spatial covariance tensor of shape (B, F, N, M, M),
+            where B is batch size, F is number of frequency bins, N is number of sources,
+            and M is number of microphones.
+    """
+
     def __init__(self, n_iter: int, eps: float = 1e-6):
         super().__init__()
 

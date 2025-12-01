@@ -1,0 +1,53 @@
+_base_: "${resolve_pkg_path:aiaccel.job.apps.config}/pbs.yaml"
+
+script_prologue: |
+  echo Job ID: $PBS_JOBID
+  echo Hostname: $(hostname)
+
+  export PATH="$HOME/.pixi/bin:$PATH"
+  export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+
+  eval "$(pixi shell-hook --as-is)"
+
+  export COLUMNS=120
+  export PYTHONUNBUFFERED=true
+
+cpu:
+  job: "direnv exec . {command}"
+  
+cpu-array:
+  job: "direnv exec . {command}"
+  
+gpu:
+  job: "direnv exec . {command}"
+  
+gpu-array:
+  job: "CUDA_VISIBLE_DEVICES=$(( LOCAL_PROC_INDEX % 8 )) direnv exec . {command}"
+
+mpi:
+  job: |-
+    source /etc/profile.d/modules.sh
+    module load hpcx
+
+    mpirun -np {args.n_procs} -bind-to none -map-by slot \
+        --mca pml ob1 \
+        --mca btl self,tcp \
+        --mca btl_tcp_if_include bond0 \
+        --mca oob_tcp_if_include bond0 \
+        direnv exec . {command}
+
+train:
+  job: |-
+    source /etc/profile.d/modules.sh
+    module load hpcx
+
+    mpirun -np {args.n_gpus} -bind-to none -map-by slot \
+        --mca pml ob1 \
+        --mca btl self,tcp \
+        --mca btl_tcp_if_include bond0 \
+        --mca oob_tcp_if_include bond0 \
+        -x MAIN_ADDR=$(hostname -i) \
+        -x MAIN_PORT=3000 \
+        -x COLUMNS=120 \
+        -x PYTHONUNBUFFERED=true \
+        direnv exec . {command}
