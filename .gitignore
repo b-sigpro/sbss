@@ -5,6 +5,8 @@ dummy/
 hdf5/
 !recipes/**/*.py
 !recipes/**/*config.yaml
+!recipes/**/Makefile
+!recipes/**/*.mk
 recipes/**/merged_config.yaml
 
 *.wav

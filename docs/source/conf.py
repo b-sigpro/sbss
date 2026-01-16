@@ -7,6 +7,8 @@
 from pathlib import Path
 import sys
 
+import sbss
+
 # import sbss
 # -- Path setup --------------------------------------------------------------
 root_path = Path(__file__).parent.parent.parent
@@ -16,8 +18,12 @@ sys.path.insert(0, str(root_path.absolute()))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Scalable BSS Toolkit"
-project_copyright = "National Institute of Advanced Industrial Science And Technology (AIST)"
 author = "National Institute of Advanced Industrial Science And Technology (AIST)"
+project_copyright = author
+# release = sbss.__version__
+
+html_logo = f"{root_path}/docs/image/logo_sbss.png"
+html_favicon = f"{root_path}/docs/image/favicon.ico"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

@@ -1,9 +1,17 @@
+.. figure:: _static/logo_sbss.png
+  :height: 140px
+  :align: center
+
 SBSS Documentation
 ==================
 
 The Scalable BSS Toolkit (SBSS) provides end-to-end components for blind source
 separation research, including neural full-rank spatial covariance analysis
 (neural FCA/FastFCA), dataset recipes, and reusable PyTorch Lightning modules.
+
+.. code-block:: bash
+
+   pip install sbss-toolkit
 
 Key Features
 ------------
