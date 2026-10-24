@@ -4,144 +4,35 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "sbss"
-authors = [{name = "Yoshiaki Bando", email = "y.bando@aist.go.jp"}]
+authors = [{ name = "Yoshiaki Bando", email = "y.bando@aist.go.jp" }]
 readme = "README.md"
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 description = "Scalable Blind Source Separation Toolkit"
-version = "2025.11"
+version = "2026.10.0"
 
 dependencies = [
-    "aiaccel==2025.12",
+    "aiaccel>=2026.6.0",
     "einops",
-    "hydra-core@git+https://github.com/facebookresearch/hydra.git",
-    "omegaconf@git+https://github.com/omry/omegaconf.git",
-    "rich",
-    "matplotlib",
-    "lightning",
+    "hydra-core",
     "kornia",
-    "numpy",
-    "torch",
-    "soundfile",
     "librosa",
+    "lightning",
+    "matplotlib",
+    "natsort",
+    "numpy",
+    "omegaconf>=2.4.0",
+    "pyyaml",
+    "resampy",
+    "rich",
+    "rotary-embedding-torch>=0.8.9",
+    "soundfile",
+    "scipy",
+    "torch",
     "torchaudio",
     "torchmetrics",
     "torchvision",
-    "pyyaml",
 ]
 
 [project.urls]
 Home = "https://ybando.jp"
 
-[project.optional-dependencies]
-dev = [
-    "mpi4py",
-    "h5py",
-    "tensorboard",
-    "tensorboard-data-server",
-    "mir_eval",
-    "pesq",
-    "myst-parser",
-    "markdown-it-py>=3.0,<4.0",
-    "ruff",
-    "pystoi",
-    "pandas",
-    "sphinx",
-    "sphinxcontrib-jquery",
-    "sphinx-intl",
-    "sphinx-fontawesome",
-    "sphinx-rtd-theme",
-    "sphinx-copybutton",
-    "sphinx-autobuild",
-    "sphinx_design",
-    "shibuya"
-]
-
-dev-gpu = [
-    "gss@git+https://github.com/desh2608/gss",
-    "gpuRIR@git+https://github.com/DavidDiazGuerra/gpuRIR",
-]
-
-[tool.pixi.workspace]
-channels = ["conda-forge"]
-platforms = ["linux-64"]
-
-[tool.pixi.dependencies]
-python = ">=3.10,<3.11"
-openjdk = "*"
-blas = { version = "*", build = "mkl" }
-cuda = "12.8.*"
-
-[tool.pixi.pypi-dependencies]
-sbss = { path = ".", editable = true }
-pkgconfig = "*"
-cupy-cuda12x = "*"
-
-[tool.pixi.pypi-options]
-no-build-isolation = ["gss"]
-
-[tool.pixi.feature.dev.pypi-options]
-no-binary = ["gpuRIR"]
-
-[tool.pixi.feature.dev.dependencies]
-# build tools
-make = ">=4.4"
-cmake = "*"
-pre-commit = "*"
-byobu = "*"
-tmux = "<3.6"
-# mpi
-openmpi = { version = "4.1.*", build = "external_*" }
-hdf5 = { version = "*", build = "mpi_openmpi*" }
-h5py = { version = "*", build = "mpi_openmpi*" }
-mpi4py = "*"
-# dev-tools
-ipython = "*"
-optuna = "*"
-jupyter = "*"
-tensorboard-data-server = ">=0.7.0,<0.8"
-markdown-it-py = ">=3.0,<4.0"
-# multimedia tools
-sox = "*"
-ffmpeg = ">=8.0.0"
-
-[tool.pixi.environments]
-default = { features = ["dev", "dev-gpu"], solve-group = "default" }
-
-[tool.pixi.tasks]
-
-
-[tool.ruff]
-line-length = 120
-target-version = "py310"
-
-[tool.ruff.lint]
-select = ["E", "F", "UP", "B", "SIM", "I"]
-ignore = ["B905"]
-
-[tool.ruff.lint.isort]
-force-sort-within-sections = true
-
-section-order = [
-    "future",
-    "typing",
-    "standard-library",
-    "utilities",
-    "datascience",
-    "torch",
-    "torch-third-party",
-    "third-party",
-    "audio",
-    "first-party",
-    "local-folder"
-]
-
-[tool.ruff.lint.isort.sections]
-"typing" = ["typing"]
-"utilities" = ["progressbar", "omegaconf", "hydra"]
-"datascience" = ["numpy", "scipy", "pandas", "matplotlib", "opt_einsum", "einops"]
-"torch" = ["torch"]
-"torch-third-party" = ["torchaudio", "torchvision", "auraloss", "lightning", "einops.layers"]
-"audio" = ["librosa", "pypesq", "pystoi", "soundfile"]
-
-[tool.ruff.per-file-ignores]
-"__init__.py" = ["F401"]

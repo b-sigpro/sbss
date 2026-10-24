@@ -11,6 +11,7 @@ repos:
       - id: insert-license
         name: "Insert license header"
         args:
-          - --license-filepath=LICENSE_HEADER
+          - --license-filepath=.license-header.txt
           - --detect-license-in-X-top-lines=16
+          - --allow-past-years
         types_or: [python, makefile]
