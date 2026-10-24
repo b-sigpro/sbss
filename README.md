@@ -32,7 +32,7 @@ For development, we recommend to use Pixi for installing the dependencies:
 git clone github.com:b-sigpro/sbss
 pixi install
 ```
-Full instructions are provided in https://sbss.readthedocs.io/en/latest/user_guide/index.html
+Full instructions are provided in https://sbss-toolkit.readthedocs.io/en/latest/user_guide/index.html
 
 ## Acknowledgement
 * Part of this software was developed in a project commissioned by the New Energy and Industrial Technology Development Organization (NEDO).
