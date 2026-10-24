@@ -3,8 +3,8 @@
 <div align="center">
     <img src="https://img.shields.io/github/license/b-sigpro/sbss.svg" />
     <img src="https://img.shields.io/badge/Python-3.10-blue" />
-    <a href="https://sbss.readthedocs.io/en/latest/index.html">
-        <img src="https://app.readthedocs.org/projects/sbss/badge/?version=latest" />
+    <a href="https://sbss-toolkit.readthedocs.io/en/latest/index.html">
+        <img src="https://app.readthedocs.org/projects/sbss-toolkit/badge/?version=latest" />
     </a>
 </div>
 
