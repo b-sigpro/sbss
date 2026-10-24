@@ -29,7 +29,12 @@ class ISSDiagonalizer(nn.Module):
     """
 
     def __init__(
-        self, n_iter: int = 1, eps: float = 1e-6, eps2: float = 1e-6, eps3: float = 1e-3, norm_q: bool = False
+        self,
+        n_iter: int = 1,
+        eps: float = 1e-6,
+        eps2: float = 1e-6,
+        eps3: float = 1e-3,
+        norm_q: bool = False,
     ):
         super().__init__()
 
@@ -52,9 +57,14 @@ class ISSDiagonalizer(nn.Module):
 
         _, _, M, T = x.shape
 
-        V = torch.einsum("...kt,...mt,...nt->...kmn", r.clip(self.eps3), x, x.conj()) / T
+        V = (
+            torch.einsum("...kt,...mt,...nt->...kmn", r.clip(self.eps3), x, x.conj())
+            / T
+        )
         trV = torch.einsum("...mm->...", V)[..., None, None].real
-        V = V + trV.maximum(torch.ones_like(trV)).to(V.dtype) * self.eps * torch.eye(M, device="cuda")
+        V = V + trV.maximum(torch.ones_like(trV)).to(V.dtype) * self.eps * torch.eye(
+            M, device="cuda"
+        )
 
         for _ in range(self.n_iter):
             for k in range(M):

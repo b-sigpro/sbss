@@ -47,13 +47,19 @@ def main():
     for src_filename in track(src_filename_list):
         src_wav, sr = sf.read(src_filename)
 
-        src_spec = stft(src_wav.T, n_fft=config.n_fft, hop_length=config.hop_length)  # [M, F, T]
+        src_spec = stft(
+            src_wav.T, n_fft=config.n_fft, hop_length=config.hop_length
+        )  # [M, F, T]
         src_spec = cp.asarray(src_spec)
         M, F, T = src_spec.shape
 
-        dst_spec = wpe(src_spec.transpose(1, 0, 2), taps=config.wpe.taps, delay=config.wpe.delay)
+        dst_spec = wpe(
+            src_spec.transpose(1, 0, 2), taps=config.wpe.taps, delay=config.wpe.delay
+        )
 
-        dst_wav = istft(dst_spec.get().transpose(1, 0, 2), hop_length=config.hop_length).T
+        dst_wav = istft(
+            dst_spec.get().transpose(1, 0, 2), hop_length=config.hop_length
+        ).T
 
         sf.write(dst_path / src_filename.name, dst_wav, sr, "PCM_24")
 

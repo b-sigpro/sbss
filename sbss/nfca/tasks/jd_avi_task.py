@@ -28,8 +28,8 @@ class JdAviTask(OptimizerLightningModule):
     Similar to :class:`sbss.nfca.tasks.AviTask`, this module optimizes the evidence lower
     bound of neural FCA, but it follows the fast variant [Bando2023]_ in which the spatial
     covariance model is factorized by an estimated joint diagonalizer ``Q`` and gain tensor
-    ``g``. The encoder produces amortized posterior distributions over latent variables as 
-    well as ``g``, ``Q``, and auxiliary spectrograms ``xt`` derived from the diagonalized 
+    ``g``. The encoder produces amortized posterior distributions over latent variables as
+    well as ``g``, ``Q``, and auxiliary spectrograms ``xt`` derived from the diagonalized
     mixtures. The decoder converts latent samples into power spectral densities ``lm``; negative
     log-likelihood and KL penalties are then computed in the diagonalized domain and separation
     is performed via Wiener filtering followed by iSTFT.
@@ -92,7 +92,13 @@ class JdAviTask(OptimizerLightningModule):
         # Wiener filtering
         yt = torch.einsum("bfnt,bfmn->bfmt", lm, g).add(1e-6)
         Qx_yt = torch.einsum("bfmn,bfnt->bfmt", Q, xraw) / yt
-        s = torch.einsum("bfm,bfnt,bfmn,bfmt->bnft", torch.linalg.inv(Q)[..., out_ch, :], lm, g, Qx_yt)
+        s = torch.einsum(
+            "bfm,bfnt,bfmn,bfmt->bnft",
+            torch.linalg.inv(Q)[..., out_ch, :],
+            lm,
+            g,
+            Qx_yt,
+        )
 
         wav_sep = self.istft(s)
 
@@ -111,7 +117,11 @@ class JdAviTask(OptimizerLightningModule):
 
         # stft
         x = self.stft(wav)  # [B, M, F, T]
-        x /= (xpwr := x.abs().square().clip(1e-6)).mean(dim=(1, 2, 3), keepdims=True).sqrt()
+        x /= (
+            (xpwr := x.abs().square().clip(1e-6))
+            .mean(dim=(1, 2, 3), keepdims=True)
+            .sqrt()
+        )
         B, F, M, T = x.shape
         BFT = B * F * T
 
@@ -127,7 +137,11 @@ class JdAviTask(OptimizerLightningModule):
         _, ldQ = torch.linalg.slogdet(Q)  # [B, F]
         yt = torch.einsum("bfnt,bfmn->bfmt", lm, g) + 1e-6
 
-        nll = yt.log().sum() / BFT + torch.sum(xt.clip(1e-6) / yt) / BFT - 2 * ldQ.sum() / (B * F)
+        nll = (
+            yt.log().sum() / BFT
+            + torch.sum(xt.clip(1e-6) / yt) / BFT
+            - 2 * ldQ.sum() / (B * F)
+        )
 
         # calculate kl
         kl = kl_divergence(qz, Normal(0, 1)).sum() / BFT

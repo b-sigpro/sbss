@@ -5,4 +5,8 @@ from sbss.common.callbacks.constant_annealer import ConstantAnnealerCallback
 from sbss.common.callbacks.cyclic_annealer import CyclicAnnealerCallback
 from sbss.common.callbacks.cyclic_stop_annealer import CyclicStopAnnealerCallback
 
-__all__ = ["ConstantAnnealerCallback", "CyclicAnnealerCallback", "CyclicStopAnnealerCallback"]
+__all__ = [
+    "ConstantAnnealerCallback",
+    "CyclicAnnealerCallback",
+    "CyclicStopAnnealerCallback",
+]

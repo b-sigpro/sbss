@@ -59,7 +59,9 @@ class ResDecoder(nn.Module):
         torch.Tensor: Estimated magnitude spectrogram tensor of shape [B, F, N, T].
     """
 
-    def __init__(self, n_fft: int, dim_latent: int, io_ch: int = 256, n_layers: int = 3):
+    def __init__(
+        self, n_fft: int, dim_latent: int, io_ch: int = 256, n_layers: int = 3
+    ):
         super().__init__()
 
         n_stft = n_fft // 2 + 1

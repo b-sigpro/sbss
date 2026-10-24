@@ -47,7 +47,11 @@ def main():
         wav, sr = sf.read(src_filename)
 
         wav = wav[:, : config.n_mics]
-        wav += np.sqrt(np.mean(wav**2)) * 10 ** (-config.snr / 20) * np.random.randn(*wav.shape)
+        wav += (
+            np.sqrt(np.mean(wav**2))
+            * 10 ** (-config.snr / 20)
+            * np.random.randn(*wav.shape)
+        )
 
         assert np.all(np.abs(wav) < 1)
 

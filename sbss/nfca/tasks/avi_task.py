@@ -37,7 +37,7 @@ class AviTask(OptimizerLightningModule):
             posteriors for latent variables given normalized multichannel STFTs.
         decoder (nn.Module): Network generating power spectral densities from latent
             samples.
-        scm_estimator (nn.Module): Estimates spatial covariance matrices 
+        scm_estimator (nn.Module): Estimates spatial covariance matrices
             for each source and frequency bin, yielding the ``H`` tensors in the paper.
         n_fft (int): FFT size used for spectrogram computation.
         hop_length (int): Hop length for both STFT and inverse STFT.
@@ -114,7 +114,11 @@ class AviTask(OptimizerLightningModule):
 
         # initialize constants
         x = self.stft(wav)  # [B, M, F, T]
-        x /= (xpwr := x.abs().square().clip(1e-6)).mean(dim=(1, 2, 3), keepdims=True).sqrt()
+        x /= (
+            (xpwr := x.abs().square().clip(1e-6))
+            .mean(dim=(1, 2, 3), keepdims=True)
+            .sqrt()
+        )
         B, F, M, T = x.shape
         BFT = B * F * T
 

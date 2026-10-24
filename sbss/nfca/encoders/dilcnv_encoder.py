@@ -18,7 +18,14 @@ class DepSepConv1d(nn.Sequential):
             nn.PReLU(mid_ch),
             nn.GroupNorm(mid_ch, mid_ch),
             #
-            nn.Conv1d(mid_ch, mid_ch, ksize, padding=(ksize - 1) // 2 * dilation, dilation=dilation, groups=mid_ch),
+            nn.Conv1d(
+                mid_ch,
+                mid_ch,
+                ksize,
+                padding=(ksize - 1) // 2 * dilation,
+                dilation=dilation,
+                groups=mid_ch,
+            ),
             nn.PReLU(mid_ch),
             nn.GroupNorm(mid_ch, mid_ch),
             #
@@ -31,7 +38,9 @@ class DepSepConv1d(nn.Sequential):
 
 class DilConvBlock1d(nn.Sequential):
     def __init__(self, io_ch, mid_ch, ksize, n_layers):
-        super().__init__(*[DepSepConv1d(io_ch, mid_ch, ksize, 2**ll) for ll in range(n_layers)])
+        super().__init__(
+            *[DepSepConv1d(io_ch, mid_ch, ksize, 2**ll) for ll in range(n_layers)]
+        )
 
 
 class DilcnvEncoder(nn.Module):

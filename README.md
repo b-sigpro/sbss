@@ -2,8 +2,11 @@
 <br>
 <div align="center">
     <img src="https://img.shields.io/github/license/b-sigpro/sbss.svg" />
-    <img src="https://img.shields.io/badge/Python-3.10-blue" />
+    <img src="https://img.shields.io/badge/Python-3.10%2B-blue" />
     <a href="https://sbss-toolkit.readthedocs.io/en/latest/index.html">
+    <a href="https://pixi.sh/">
+        <img src="https://img.shields.io/badge/Pixi-managed-yellow" alt="Pixi" />
+    </a>
         <img src="https://app.readthedocs.org/projects/sbss-toolkit/badge/?version=latest" />
     </a>
 </div>

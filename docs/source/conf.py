@@ -7,7 +7,6 @@
 from pathlib import Path
 import sys
 
-import sbss
 
 # import sbss
 # -- Path setup --------------------------------------------------------------

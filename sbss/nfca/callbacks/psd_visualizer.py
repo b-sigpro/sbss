@@ -30,7 +30,9 @@ class PsdVisualizerCallback(lt.Callback):
         None
     """
 
-    def on_validation_start(self, trainer: lt.Trainer, pl_module: Any, tag: str = "training"):
+    def on_validation_start(
+        self, trainer: lt.Trainer, pl_module: Any, tag: str = "training"
+    ):
         if not hasattr(pl_module, "dump"):
             return
 
@@ -44,7 +46,12 @@ class PsdVisualizerCallback(lt.Callback):
         B, *_ = dump.xpwr.shape
         b = np.random.choice(B)
 
-        dump = dump.__class__(**{k: v[b].cpu() if isinstance(v, torch.Tensor) else v for k, v in vars(dump).items()})
+        dump = dump.__class__(
+            **{
+                k: v[b].cpu() if isinstance(v, torch.Tensor) else v
+                for k, v in vars(dump).items()
+            }
+        )
         F, N, T = dump.lm.shape
 
         logx = dump.xpwr[:, 0, :].log10().mul_(10)
@@ -52,21 +59,27 @@ class PsdVisualizerCallback(lt.Callback):
 
         # plot observation and PSDs
         gridspec_kw = dict(height_ratios=[2] + N * [2, 1])
-        fig, axs = plt.subplots(1 + (2 * N), 1, sharex=True, gridspec_kw=gridspec_kw, figsize=[8, 2 + 3 * N])
+        fig, axs = plt.subplots(
+            1 + (2 * N), 1, sharex=True, gridspec_kw=gridspec_kw, figsize=[8, 2 + 3 * N]
+        )
 
         axs[0].imshow(logx, origin="lower", aspect="auto")
 
         lmmin, lmmax = loglm.min(), loglm.max()
         zmin, zmax = dump.z.min(), dump.z.max()
         for n, (ax1, ax2) in enumerate(axs[1 : 1 + 2 * N].reshape(-1, 2)):
-            ax1.imshow(loglm[..., n, :], origin="lower", aspect="auto", vmin=lmmin, vmax=lmmax)
+            ax1.imshow(
+                loglm[..., n, :], origin="lower", aspect="auto", vmin=lmmin, vmax=lmmax
+            )
 
             ax2.plot(dump.z[..., n, :].T)
             ax2.set_xlim(0, T - 1)
             ax2.set_ylim(zmin, zmax)
 
         fig.tight_layout(pad=0.1)
-        pl_module.logger.experiment.add_figure(f"{prefix}/dump", fig, global_step=trainer.current_epoch)
+        pl_module.logger.experiment.add_figure(
+            f"{prefix}/dump", fig, global_step=trainer.current_epoch
+        )
         plt.close(fig)
 
     def on_validation_end(self, trainer: lt.Trainer, pl_module: Any):

@@ -12,9 +12,19 @@ from einops.layers.torch import Rearrange
 
 
 class Conv1dBlock(nn.Sequential):
-    def __init__(self, in_ch: int, out_ch: int, ksize: int, stride: int = 1, groups: int = 1):
+    def __init__(
+        self, in_ch: int, out_ch: int, ksize: int, stride: int = 1, groups: int = 1
+    ):
         super().__init__(
-            nn.Conv1d(in_ch, out_ch, ksize, stride=stride, padding=(ksize - 1) // 2, groups=groups, bias=False),
+            nn.Conv1d(
+                in_ch,
+                out_ch,
+                ksize,
+                stride=stride,
+                padding=(ksize - 1) // 2,
+                groups=groups,
+                bias=False,
+            ),
             nn.GroupNorm(1, out_ch),
             nn.PReLU(out_ch),
         )
@@ -32,10 +42,15 @@ class UNetBlock1d(nn.Module):
 
         self.cnv_enc = Conv1dBlock(io_ch, mid_ch, 1)
         self.cnvs = nn.ModuleList(
-            [Conv1dBlock(mid_ch, mid_ch, ksize, 1 if ll == 0 else 2, mid_ch) for ll in range(n_layers)]
+            [
+                Conv1dBlock(mid_ch, mid_ch, ksize, 1 if ll == 0 else 2, mid_ch)
+                for ll in range(n_layers)
+            ]
         )
 
-        self.cnv_dec = nn.Sequential(nn.GroupNorm(1, mid_ch), nn.PReLU(mid_ch), nn.Conv1d(mid_ch, io_ch, 1))
+        self.cnv_dec = nn.Sequential(
+            nn.GroupNorm(1, mid_ch), nn.PReLU(mid_ch), nn.Conv1d(mid_ch, io_ch, 1)
+        )
 
     def forward(self, x):
         # in_ch -> mid_ch

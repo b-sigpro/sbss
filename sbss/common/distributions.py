@@ -22,8 +22,12 @@ class ApproxBernoulli(RelaxedBernoulli):
     """
 
     def __init__(self, temperature, probs=None, logits=None, validate_args=None):
-        base_dist = LogitRelaxedBernoulli(temperature, probs, logits, validate_args=validate_args)
-        super(RelaxedBernoulli, self).__init__(base_dist, SigmoidTransform(), validate_args=validate_args)
+        base_dist = LogitRelaxedBernoulli(
+            temperature, probs, logits, validate_args=validate_args
+        )
+        super(RelaxedBernoulli, self).__init__(
+            base_dist, SigmoidTransform(), validate_args=validate_args
+        )
 
     def rsample(self, sample_shape=torch.Size()):  # noqa
         x = super().rsample(sample_shape)
@@ -49,7 +53,9 @@ class ComplexWishart(ExponentialFamily):
     """
 
     def __init__(self, nu, covariance_matrix):
-        self.nu = torch.as_tensor(nu, dtype=torch.float32, device=covariance_matrix.device)
+        self.nu = torch.as_tensor(
+            nu, dtype=torch.float32, device=covariance_matrix.device
+        )
 
         self.covariance_matrix = covariance_matrix
         self.M = covariance_matrix.shape[-1]
@@ -79,7 +85,9 @@ class ComplexInverseWishart(ExponentialFamily):
     """
 
     def __init__(self, nu, covariance_matrix):
-        self.nu = torch.as_tensor(nu, dtype=torch.float32, device=covariance_matrix.device)
+        self.nu = torch.as_tensor(
+            nu, dtype=torch.float32, device=covariance_matrix.device
+        )
 
         self.covariance_matrix = covariance_matrix
         self.M = covariance_matrix.shape[-1]
@@ -131,7 +139,9 @@ class FastComplexInverseWishart(ComplexInverseWishart):
     """
 
     def __init__(self, nu, covariance_matrix):
-        self.nu = torch.as_tensor(nu, dtype=torch.float32, device=covariance_matrix.device)
+        self.nu = torch.as_tensor(
+            nu, dtype=torch.float32, device=covariance_matrix.device
+        )
 
         self.covariance_matrix = covariance_matrix
         self.M = covariance_matrix.shape[-1]

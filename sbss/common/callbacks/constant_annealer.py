@@ -34,7 +34,9 @@ class ConstantAnnealerCallback(lt.Callback):
         self.initialized = False
         self.orig_value = None
 
-    def on_train_batch_start(self, trainer: lt.Trainer, pl_module: Any, batch: torch.Tensor, batch_idx: int):
+    def on_train_batch_start(
+        self, trainer: lt.Trainer, pl_module: Any, batch: torch.Tensor, batch_idx: int
+    ):
         if not self.initialized:
             self.orig_value = getattr(pl_module, self.name)
 

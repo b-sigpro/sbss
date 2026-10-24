@@ -30,9 +30,14 @@ class UNetBlock1d(nn.Module):
     ):
         super().__init__()
 
-        self.cnv0 = nn.Sequential(Conv1dBlock(io_ch + xt_ch if use_xt else io_ch, mid_ch, 1))
+        self.cnv0 = nn.Sequential(
+            Conv1dBlock(io_ch + xt_ch if use_xt else io_ch, mid_ch, 1)
+        )
         self.cnvs = nn.ModuleList(
-            [Conv1dBlock(mid_ch, mid_ch, ksize, 1 if ll == 0 else 2, mid_ch) for ll in range(n_layers)]
+            [
+                Conv1dBlock(mid_ch, mid_ch, ksize, 1 if ll == 0 else 2, mid_ch)
+                for ll in range(n_layers)
+            ]
         )
         self.nrmact = nn.Sequential(
             nn.GroupNorm(1, mid_ch),
@@ -132,7 +137,9 @@ class JdUNetEncoder(nn.Module):
         self.bn0 = nn.BatchNorm1d(n_stft)
         self.cnv0 = nn.Conv1d((2 * n_mic - 1) * n_stft, io_ch, 1)
 
-        UNetBlock1d_ = partial(UNetBlock1d, n_stft, n_mic, io_ch, xt_ch, mid_ch, ksize, n_layers)
+        UNetBlock1d_ = partial(
+            UNetBlock1d, n_stft, n_mic, io_ch, xt_ch, mid_ch, ksize, n_layers
+        )
         self.cnv_list = nn.ModuleList(
             [UNetBlock1d_(False, True)]
             + [UNetBlock1d_(True, True) for _ in range(n_blocks - 1)]
@@ -181,7 +188,12 @@ class JdUNetEncoder(nn.Module):
         # pre-convolution
         h = self.cnv0(h)
 
-        xt, Q = None, torch.tile(torch.eye(M, dtype=torch.complex64, device="cuda"), [B, F, 1, 1])  # [B, F, K, M, M]
+        xt, Q = (
+            None,
+            torch.tile(
+                torch.eye(M, dtype=torch.complex64, device="cuda"), [B, F, 1, 1]
+            ),
+        )  # [B, F, K, M, M]
         h, r = self.cnv_list[0](h)
         for cnv in self.cnv_list[1:]:  # type: ignore
             Q, xt = self.diagonalizer(r, Q, x)
