@@ -24,7 +24,7 @@ SBSS is a research-oriented toolkit for scalable blind source separation, includ
 ## Getting started
 For only inference, you can install SBSS by using pip (or uv) as:
 ```bash
-pip install git+https://github.com/b-sigpro/sbss
+pip install sbss-toolkit
 ```
 
 For development, we recommend to use Pixi for installing the dependencies:

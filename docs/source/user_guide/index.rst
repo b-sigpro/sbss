@@ -9,7 +9,7 @@ For inference only, install the toolkit from PyPI:
 
 .. code-block:: bash
 
-   pip install git+https://github.com/b-sigpro/sbss
+   pip install sbss-toolkit
 
 Pixi install (training)
 ~~~~~~~~~~~~~~~~~~~~~~~
