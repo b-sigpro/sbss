@@ -17,6 +17,7 @@ python = ">=3.10,<3.15"
 openjdk = "*"
 blas = { version = "*", build = "mkl" }
 setuptools = "<82"
+hatch = "*"
 
 # build tools
 make = ">=4.4"
