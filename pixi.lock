@@ -8861,7 +8861,7 @@ packages:
   size: 24190
   timestamp: 1779159948016
 - pypi: ./
-  name: sbss
+  name: sbss-toolkit
   requires_dist:
   - aiaccel>=2026.6.0
   - einops
@@ -8877,8 +8877,8 @@ packages:
   - resampy
   - rich
   - rotary-embedding-torch>=0.8.9
-  - soundfile
   - scipy
+  - soundfile
   - torch
   - torchaudio
   - torchmetrics

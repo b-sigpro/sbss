@@ -1,14 +1,13 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
-name = "sbss"
+name = "sbss-toolkit"
 authors = [{ name = "Yoshiaki Bando", email = "y.bando@aist.go.jp" }]
 readme = "README.md"
 license = { file = "LICENSE" }
 description = "Scalable Blind Source Separation Toolkit"
-version = "2026.10.1"
 
 dependencies = [
     "aiaccel>=2026.6.0",
@@ -33,6 +32,13 @@ dependencies = [
     "torchvision",
 ]
 
+dynamic = ["version"]
+
+[tool.hatch.version]
+source = "vcs"
+
 [project.urls]
 Home = "https://ybando.jp"
 
+[tool.hatch.build.targets.wheel]
+packages = ["sbss"]
