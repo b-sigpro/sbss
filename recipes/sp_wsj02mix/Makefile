@@ -5,9 +5,9 @@
 data := derev
 duration := 64000
 
-train_path := models/nfca/unet
+train_path := models/nfastfca/unet
 
-tag := nfca
+tag := nfastfca
 inference_name := $(tag)_$(shell date +"%Y-%m-%d-%H-%M-%S")_$(shell tr -dc 'a-z0-9' </dev/urandom | head -c 4)
 inference_command := python -m sbss.nfca.pipelines.separate batch $(train_path) $$src_path $$dst_path
 inference_path := results/$(inference_name)

@@ -7,7 +7,6 @@
 from pathlib import Path
 import sys
 
-
 # import sbss
 # -- Path setup --------------------------------------------------------------
 root_path = Path(__file__).parent.parent.parent

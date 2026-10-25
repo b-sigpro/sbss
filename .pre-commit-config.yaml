@@ -1,3 +1,7 @@
+default_install_hook_types:
+  - pre-commit
+  - pre-push
+
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.7
@@ -15,3 +19,4 @@ repos:
           - --detect-license-in-X-top-lines=16
           - --allow-past-years
         types_or: [python, makefile]
+        exclude: ^(sbss/third/|LICENSE$)

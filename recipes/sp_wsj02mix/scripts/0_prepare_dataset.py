@@ -5,19 +5,17 @@
 
 from pathlib import Path
 
-from omegaconf import DictConfig
-
-from aiaccel.config import load_config, overwrite_omegaconf_dumper, print_config
+from aiaccel.config import prepare_config
 
 
 def main():
     script_path = Path(__file__)
     dataset_path = script_path.parent.parent
 
-    overwrite_omegaconf_dumper()
-
-    config: DictConfig = load_config(dataset_path / "config.yaml")  # type: ignore
-    print_config(config)
+    config = prepare_config(
+        dataset_path / "config.yaml",
+        print_config=True,
+    )
 
     sp_wsj02mix_path = Path(config.path.sp_wsj02mix)
     wsj02mix_path = Path(config.path.wsj02mix)

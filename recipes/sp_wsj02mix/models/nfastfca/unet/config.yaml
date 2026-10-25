@@ -11,6 +11,8 @@ n_mic: 4
 n_src: 3
 dim_latent: 50
 
+checkpoint_filename: last
+
 trainer:
   max_epochs: 200
   gradient_clip_val: 5.0
@@ -25,10 +27,6 @@ trainer:
     - _target_: lightning.pytorch.callbacks.ModelCheckpoint
       filename: "{epoch:04d}"
       save_last: True
-    - _target_: lightning.pytorch.callbacks.RichProgressBar
-      refresh_rate: 5
-    - _target_: lightning.pytorch.callbacks.RichModelSummary
-      max_depth: 3
 
     - _target_: sbss.common.callbacks.CyclicAnnealerCallback
       name: beta

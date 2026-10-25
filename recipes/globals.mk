@@ -8,13 +8,13 @@ job_ops :=
 # general rules
 STAGES = stage0 stage1 stage2 stage3 stage4 stage5
 
-.PHONY: all clean status scores check_train_artifacts $(STAGES) $(STAGES:%=skip-%) help
+.PHONY: all clean status scores check-git $(STAGES) $(STAGES:%=skip-%) help
 .NOTPARALLEL: stage3
 
 # general rules
 all: $(STAGES)
 
-%: status
+common_pre_dependencies = status .WAIT check-git
 
 status:
 	@echo ================================================================
@@ -24,19 +24,30 @@ status:
 			echo -e "\033[33m$(var)\033[0m:" '$($(var))';) \
 	)
 	@echo ================================================================
+	
+check-git:
+	@if [ "$$AIACCEL_SKIP_CHECK_GIT" = "1" ]; then \
+		echo "AIACCEL_SKIP_CHECK_GIT=1 is set; skipping check-git."; \
+	else \
+		aiaccel-config check-git $(train_path)/config.yaml || { \
+			printf '\033[31m%s\033[0m\n' \
+				"ERROR: Uncommitted files detected. Please commit all files before running this command."; \
+			exit 1; \
+		}; \
+	fi
 
 # stage0: dataset preparation
-stage0: status .WAIT | $(stage0_dependencies)
+stage0: | $(common_pre_dependencies) .WAIT $(stage0_dependencies)
 	@echo -e "\033[1;34mStage0 finished\033[0m"
 
-hdf5/:
+hdf5/: 
 	@echo -e "\033[1;31m[ERROR] The directory 'hdf5/' does not exist.\033[0m"
 	@echo "Please create it manually before running this script."
 	@echo "Don't forget to configure stripe settings properly!"
 	@echo ""
 	@echo "Hint:"
 	@echo "  mkdir -p hdf5/"
-	@echo "  lfs setstripe -S 1m -c -1 -i -1 hdf5/"
+	@echo "  lfs setstripe -S 5M -c 8 hdf5/"
 	@echo ""
 	@exit 1
 
@@ -45,7 +56,7 @@ skip-stage0:
 
 
 # stage1: pre-processing
-stage1: status .WAIT | $(stage1_dependencies)
+stage1: | $(common_pre_dependencies) .WAIT $(stage1_dependencies)
 	@echo -e "\033[1;34mStage1 finished\033[0m"
 
 skip-stage1:
@@ -53,7 +64,7 @@ skip-stage1:
 
 
 # stage2: hdf5 generation
-stage2: status .WAIT | $(stage2_dependencies)
+stage2: | $(common_pre_dependencies) .WAIT $(stage2_dependencies)
 	@echo -e "\033[1;34mStage2 finished\033[0m"
 
 skip-stage2:
@@ -63,7 +74,7 @@ skip-stage2:
 # stage3: inference
 stage3_dependencies := $(train_path)/.train.done
 
-stage3: status .WAIT | $(stage3_dependencies)
+stage3: | $(common_pre_dependencies) .WAIT $(stage3_dependencies)
 	@echo -e "\033[1;34mStage3 finished\033[0m"
 
 $(train_path)/.train.done: | stage2 $(train_path)/config.yaml
@@ -93,7 +104,7 @@ skip-stage3:
 
 
 # stage4: inference
-stage4: status .WAIT | $(stage4_dependencies)
+stage4: | $(common_pre_dependencies) .WAIT $(stage4_dependencies)
 	@echo -e "\033[1;34mStage4 finished\033[0m"
 
 skip-stage4:
@@ -101,7 +112,7 @@ skip-stage4:
 
 
 # stage5: evaluation
-stage5: status .WAIT | $(stage5_dependencies) .WAIT scores
+stage5: | $(common_pre_dependencies) .WAIT $(stage5_dependencies) .WAIT scores
 	@echo -e "\033[1;34mStage5 finished\033[0m"
 
 skip-stage5:

@@ -36,19 +36,13 @@ class CyclicStopAnnealerCallback(lt.Callback):
         self.initialized = False
         self.orig_value = None
 
-    def on_train_batch_start(
-        self, trainer: lt.Trainer, pl_module: Any, batch: torch.Tensor, batch_idx: int
-    ):
+    def on_train_batch_start(self, trainer: lt.Trainer, pl_module: Any, batch: torch.Tensor, batch_idx: int):
         if not self.initialized:
             self.orig_value = getattr(pl_module, self.name)
 
         step = trainer.global_step / trainer.num_training_batches
 
         if step < self.period:
-            setattr(
-                pl_module,
-                self.name,
-                self.max_value * min(2 * (step % self.cycle) / self.cycle, 1),
-            )
+            setattr(pl_module, self.name, self.max_value * min(2 * (step % self.cycle) / self.cycle, 1))
         else:
             setattr(pl_module, self.name, self.orig_value)

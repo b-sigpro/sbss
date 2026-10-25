@@ -4,3 +4,5 @@ path:
   wsj02mix: ${corpus_base_path}/wsj0mix/data/2speakers/wav16k/min/
   wsj03mix: ${corpus_base_path}/wsj0mix/data/3speakers/wav16k/min/
   sp_wsj02mix: ${corpus_base_path}/spatialized_wsj0mix/data/2speakers_reverb/wav16k/min/
+  
+  whamr: ${corpus_base_path}/wham/whamr/wav8k/min/

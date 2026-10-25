@@ -21,9 +21,7 @@ def main():
         # sdr
         title_texts.append("  SDR")
 
-        with open(
-            Path.cwd() / "results" / args.inference_name / split / "sdr.pkl", "rb"
-        ) as f:
+        with open(Path.cwd() / "results" / args.inference_name / split / "sdr.pkl", "rb") as f:
             scores = pkl.load(f)
 
         avg_sdr = np.mean([sdr for sdr, _, _ in scores.values()])
@@ -32,9 +30,7 @@ def main():
         # pesq
         title_texts.append("PESQ")
 
-        with open(
-            Path.cwd() / "results" / args.inference_name / split / "pesq.pkl", "rb"
-        ) as f:
+        with open(Path.cwd() / "results" / args.inference_name / split / "pesq.pkl", "rb") as f:
             scores = pkl.load(f)
 
         avg_pesq = np.mean(list(scores.values()))
@@ -43,9 +39,7 @@ def main():
         # stoi
         title_texts.append("STOI")
 
-        with open(
-            Path.cwd() / "results" / args.inference_name / split / "stoi.pkl", "rb"
-        ) as f:
+        with open(Path.cwd() / "results" / args.inference_name / split / "stoi.pkl", "rb") as f:
             scores = pkl.load(f)
 
         avg_stoi = np.mean(list(scores.values()))

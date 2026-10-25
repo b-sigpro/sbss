@@ -27,9 +27,7 @@ class XtVisualizerCallback(lt.Callback):
         None
     """
 
-    def on_validation_start(
-        self, trainer: lt.Trainer, pl_module: Any, tag: str = "training"
-    ):
+    def on_validation_start(self, trainer: lt.Trainer, pl_module: Any, tag: str = "training"):
         if not hasattr(pl_module, "dump"):
             return
 
@@ -43,12 +41,7 @@ class XtVisualizerCallback(lt.Callback):
         B, *_ = dump.xpwr.shape
         b = np.random.choice(B)
 
-        dump = dump.__class__(
-            **{
-                k: v[b].cpu() if isinstance(v, torch.Tensor) else v
-                for k, v in vars(dump).items()
-            }
-        )
+        dump = dump.__class__(**{k: v[b].cpu() if isinstance(v, torch.Tensor) else v for k, v in vars(dump).items()})
 
         logxt = dump.xt.log10().mul_(10).cpu().numpy()
         _, M, _ = logxt.shape
@@ -58,14 +51,10 @@ class XtVisualizerCallback(lt.Callback):
         vmax = logxt.max()
         vmin = vmax - 80
         for m, ax in enumerate(axs):
-            ax.imshow(
-                logxt[..., m, :], origin="lower", aspect="auto", vmin=vmin, vmax=vmax
-            )
+            ax.imshow(logxt[..., m, :], origin="lower", aspect="auto", vmin=vmin, vmax=vmax)
 
         fig.tight_layout(pad=0.1)
-        pl_module.logger.experiment.add_figure(
-            f"{prefix}/xt", fig, global_step=trainer.current_epoch
-        )
+        pl_module.logger.experiment.add_figure(f"{prefix}/xt", fig, global_step=trainer.current_epoch)
         plt.close(fig)
 
     def on_validation_end(self, trainer: lt.Trainer, pl_module: Any):

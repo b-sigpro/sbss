@@ -54,14 +54,10 @@ class SeparationPipeline(BasePipeline):
 
     @classmethod
     def _prepare_parser(cls, fields: list[attrs.Attribute]) -> ArgumentParser:
-        return super()._prepare_parser(
-            list(filter(lambda f: f.name != "overwrite_config", fields))
-        )
+        return super()._prepare_parser(list(filter(lambda f: f.name != "overwrite_config", fields)))
 
     @classmethod
-    def _process_unk_args(
-        cls, unk_args: list[str], kwargs: dict[str, Any], parser: ArgumentParser
-    ) -> dict[str, Any]:
+    def _process_unk_args(cls, unk_args: list[str], kwargs: dict[str, Any], parser: ArgumentParser) -> dict[str, Any]:
         return kwargs | {"overwrite_config": oc.from_cli(unk_args)}
 
 

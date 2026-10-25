@@ -8,7 +8,6 @@ from pathlib import Path
 
 import numpy as np
 
-from aiaccel.config import overwrite_omegaconf_dumper
 from aiaccel.torch.h5py.hdf5_writer import HDF5Writer
 
 import soundfile as sf
@@ -25,9 +24,7 @@ class UnsupervisedHDF5Writer(HDF5Writer[Path, None]):
         self.duration = duration
 
     def prepare_globals(self) -> tuple[list[Path], None]:
-        wav_filename_list = list(
-            (self.dataset_path / self.split / self.data).glob("*.wav")
-        )
+        wav_filename_list = list((self.dataset_path / self.split / self.data).glob("*.wav"))
         wav_filename_list.sort(key=lambda x: x.stat().st_size)
 
         return wav_filename_list, None
@@ -50,9 +47,7 @@ class UnsupervisedHDF5Writer(HDF5Writer[Path, None]):
             if t + self.duration > duration:
                 t = max(0, duration - self.duration)
 
-            groups[f"{wav_filename.name}-{tidx:03d}"] = {
-                "wav": wav[t : t + self.duration, :].T
-            }
+            groups[f"{wav_filename.name}-{tidx:03d}"] = {"wav": wav[t : t + self.duration, :].T}
 
         return groups
 
@@ -60,8 +55,6 @@ class UnsupervisedHDF5Writer(HDF5Writer[Path, None]):
 def main():
     script_path = Path(__file__)
     dataset_path = script_path.parent.parent
-    # load config
-    overwrite_omegaconf_dumper()
 
     parser = ArgumentParser()
     parser.add_argument("split", type=str)

@@ -8,7 +8,7 @@ authors = [{ name = "Yoshiaki Bando", email = "y.bando@aist.go.jp" }]
 readme = "README.md"
 license = { file = "LICENSE" }
 description = "Scalable Blind Source Separation Toolkit"
-version = "2026.10.0"
+version = "2026.10.1"
 
 dependencies = [
     "aiaccel>=2026.6.0",
